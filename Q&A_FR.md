@@ -295,3 +295,57 @@ Laravel Breeze est un kit de démarrage minimal pour l'authentification. Il four
 6. **Cache**: Mettre en cache les articles fréquemment consultés
 7. **Tests**: Ajouter des tests unitaires et fonctionnels
 8. **Journalisation**: Enregistrer les actions importantes (changement de rôle, suppression d'article, etc.)
+
+---
+
+## Partie 8: Gestion des Sessions
+
+### Q41: Quel pilote de session est utilisé par défaut dans ce projet ?
+Le projet utilise le pilote **"file"** (fichiers) par défaut, comme indiqué dans `config/session.php` (ligne 21). Les sessions sont stockées dans le dossier `storage/framework/sessions/`.
+
+### Q42: Quels pilotes de session sont supportés par Laravel ?
+Laravel supporte plusieurs pilotes de stockage pour les sessions (voir `config/session.php` lignes 16-18):
+- `file`: Stockage dans des fichiers (défaut)
+- `cookie`: Stockage dans des cookies (chiffrés)
+- `database`: Stockage dans une table de base de données
+- `memcached`: Stockage dans Memcached
+- `redis`: Stockage dans Redis
+- `dynamodb`: Stockage dans Amazon DynamoDB
+- `array`: Stockage en mémoire (seulement pour les tests)
+
+### Q43: Quelle est la durée de vie par défaut d'une session ?
+La durée de vie par défaut d'une session est de **120 minutes (2 heures)**, configurée dans `config/session.php` (ligne 35). Cela peut être modifié via la variable d'environnement `SESSION_LIFETIME` dans le fichier `.env`.
+
+### Q44: Qu'est-ce que l'option `expire_on_close` ?
+L'option `expire_on_close` (ligne 37 de `config/session.php`), si définie à `true`, fait expirer la session immédiatement lorsque le navigateur est fermé. Par défaut, elle est à `false`, donc la session reste active pendant la durée configurée même après fermeture du navigateur.
+
+### Q45: Comment sont stockées les données de session flash (comme les messages de succès/erreur) ?
+Les données flash sont stockées **uniquement pour la requête suivante**, puis sont automatiquement supprimées. C'est parfait pour les messages temporaires comme :
+- `session('success')`: Message de succès
+- `session('error')`: Message d'erreur
+
+Dans ce projet, on utilise :
+- `return redirect()->route(...)->with('success', '...')` pour ajouter un message de succès
+- `return redirect()->route(...)->with('error', '...')` pour ajouter un message d'erreur
+
+### Q46: Quelles sécurités sont mises en place pour les cookies de session ?
+Plusieurs options de sécurité dans `config/session.php` :
+1. **`http_only` (ligne 185)**: Défaut à `true`, empêche JavaScript d'accéder au cookie de session (protection contre XSS)
+2. **`same_site` (ligne 202)**: Défaut à `"lax"`, contrôle comment le cookie est envoyé lors de requêtes cross-site (protection contre CSRF)
+3. **`secure` (ligne 172)**: Si défini à `true`, le cookie n'est envoyé que via HTTPS
+4. **`encrypt` (ligne 50)**: Si défini à `true`, toutes les données de session sont chiffrées avant stockage
+
+### Q47: Comment accéder aux données de session dans les contrôleurs ?
+Plusieurs façons :
+1. **Via la facade `Session`**: `Session::get('clef')`, `Session::put('clef', 'valeur')`
+2. **Via l'instance `Request`**: `$request->session()->get('clef')`
+3. **Via la fonction helper `session()`**: `session('clef')` pour lire, `session(['clef' => 'valeur'])` pour écrire
+
+### Q48: Comment les sessions sont-elles liées à l'utilisateur ?
+Laravel utilise un **cookie de session** stocké sur le navigateur de l'utilisateur. Ce cookie contient un identifiant unique (ID de session). Lorsque l'utilisateur fait une requête, le navigateur envoie ce cookie, et Laravel l'utilise pour retrouver les données de session correspondantes sur le serveur.
+
+### Q49: Où peut-on voir les sessions actives dans ce projet ?
+Puisque le pilote est `file`, on peut voir les sessions actives dans le dossier `storage/framework/sessions/` (chaque fichier correspond à une session).
+
+### Q50: Qu'est-ce que la "loterie" de nettoyage des sessions (`lottery`) ?
+Certains pilotes (comme `file`) nécessitent de nettoyer manuellement les anciennes sessions expirées. L'option `lottery` (lignes 117 de `config/session.php`) définit les chances que ce nettoyage soit effectué lors d'une requête. Par défaut, c'est 2 chances sur 100 (2%).

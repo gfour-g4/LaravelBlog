@@ -297,3 +297,58 @@ starter kit minimal auth (login, register, reset password…).
 6. cache
 7. tests
 8. logging actions
+
+---
+
+## Partie 8: Gestion des Sessions
+
+### Q41: Chnoua driver mta3 session ?
+
+Driver **"file"** (fichiers) par défaut. Sessions mawjoudin fi `storage/framework/sessions/`.
+
+### Q42: Chnoua drivers li ynajem yesta3mel ?
+
+Laravel ysupporti:
+- `file`: fichiers
+- `cookie`: cookies (chiffrés)
+- `database`: DB
+- `memcached`, `redis`, `dynamodb`: cache systems
+- `array`: mémoire (tests only)
+
+### Q43: Chnoua durée mta3 session ?
+
+Par défaut **120 minutes (2 heures)**. Thot fi `.env` b `SESSION_LIFETIME`.
+
+### Q44: `expire_on_close` chnoua ?
+
+Iza `true`, session tefsa5 kif tefser navigateur. Par défaut `false`.
+
+### Q45: Session flash (success/error) ?
+
+Flash data tsajel **ghir lel request li ba3d**, ba3d tefsa5.
+- `return ...->with('success', '...')`
+- `return ...->with('error', '...')`
+
+### Q46: Sécurité cookies session ?
+
+1. **`http_only`**: JS maych ynajem yaccedi (anti XSS)
+2. **`same_site`**: anti CSRF
+3. **`secure`**: HTTPS bark
+4. **`encrypt`**: chiffrer data
+
+### Q47: Kif yaccedi lil session ?
+
+- `session('clef')` → lire
+- `session(['clef' => 'valeur'])` → écrire
+
+### Q48: Kif session mrabta bil user ?
+
+Cookie f navigateur fih ID unique. Laravel yesta3mel had ID bch ylawej lel data f server.
+
+### Q49: Win nchouf sessions actives ?
+
+Fi `storage/framework/sessions/` (kol fichier wahda session).
+
+### Q50: Lottery nettoyage ?
+
+Certains drivers (file) y7ebou nettoyage. `lottery` tħodd chances (par défaut 2/100 = 2%) ili nettoyage ysir fi request.
